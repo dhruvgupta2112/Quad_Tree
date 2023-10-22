@@ -9,12 +9,17 @@ public:
 };
 
 class Rectangle{
+    // ******************************************************************************
     // w = width
     // h = height
-    double x, y, w, h;
-    Rectangle(double x, double y, double w, double h): x(x), y(y), w(w), h(h){}
-    bool contains(const Point &);
-    bool intersects(const Rectangle&);
+    // double x, y, w, h;
+    // Rectangle(double x, double y, double w, double h): x(x), y(y), w(w), h(h){}
+    // bool contains(const Point &);
+    // bool intersects(const Rectangle&);
+    // ************************************************************************************
+    Point centre; // Centre point of the rectangle
+    double HalfDim; //Distance of centre from boundary of rectangle
+    Rectangle(Point centre, double HalfDim): centre(centre),HalfDim(HalfDim){}
 };
 
 class quadTree{
