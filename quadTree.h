@@ -34,6 +34,16 @@ bool checkPoint(Rectangle &boundary, Point &point)
     return true;
 }
 
+// To check if two rectangles intersects or not
+bool recIntersect(Rectangle &main, Rectangle &other)
+{
+    if (main.centre.x + main.HalfDim > other.centre.x - other.HalfDim || main.centre.x - main.HalfDim < other.centre.x + other.HalfDim)
+        return true;
+    if (main.centre.y + main.HalfDim > other.centre.y - other.HalfDim || main.centre.y - main.HalfDim < other.centre.y + other.HalfDim)
+        return true;
+    return false;
+}
+
 class quadTree
 {
 private:
