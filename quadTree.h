@@ -8,7 +8,7 @@ class Point{
 };
 
 class Rectangle{
-    // w = widht 
+    // w = width
     // h = height
     int x, y, w, h;
 };
