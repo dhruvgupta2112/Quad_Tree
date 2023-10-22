@@ -23,7 +23,12 @@ private:
     int capacity;
     vector<Point> points;
     bool divided;
+    quadTree * northwest;
+    quadTree * northeast;
+    quadTree * southwest;
+    quadTree * southeast;
 public:
+    
     void insert();
 };
 
