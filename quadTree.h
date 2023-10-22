@@ -44,7 +44,7 @@ bool recIntersect(Rectangle &main, Rectangle &other)
     return false;
 }
 
-class quadTree
+class QuadTree
 {
 private:
     Rectangle boundary;
@@ -53,5 +53,18 @@ private:
     bool divided;
 
 public:
+    QuadTree *NW;
+    QuadTree *SW;
+    QuadTree *SE;
+    QuadTree *NE;
+    QuadTree(const Rectangle &boundary, int capacity) : boundary(boundary), capacity(capacity), divided(false)
+    {
+        NW = nullptr;
+        SW = nullptr;
+        SE = nullptr;
+        NE = nullptr;
+    }
+    for (size_t i = 0; i < capacity; i++)
+        QuadTree->points[i] = NULL;
     void insert();
 };
