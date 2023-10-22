@@ -12,9 +12,13 @@ class Rectangle{
     int x, y, w, h;
 };
 
-class QuadTree{
+class quadTree{
+private:
     Rectangle boundary;
     int capacity;
     vector<Point> pt;
+    bool divided;
+public:
+    void insert();
 };
 
