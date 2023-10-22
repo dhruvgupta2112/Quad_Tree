@@ -1,34 +1,41 @@
 #pragma once
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
 
-class Point{
-public: 
+class Point
+{
+public:
     double x, y;
-    Point(double x = 0, double y = 0): x(x), y(y){}
+    Point(double x = 0, double y = 0) : x(x), y(y) {}
 };
 
-class Rectangle{
-    // w = width
-    // h = height
+class Rectangle
+{
+public:
+    //w = width
+    //h = height
     double x, y, w, h;
-    Rectangle(double x, double y, double w, double h): x(x), y(y), w(w), h(h){}
+    Rectangle(double x, double y, double w, double h) : x(x), y(y), w(w), h(h) {}
     bool contains(const Point &);
-    bool intersects(const Rectangle&);
+    bool intersects(const Rectangle &);
 };
 
-class quadTree{
+
+class quadTree
+{
 private:
-    Rectangle boundary;
     int capacity;
-    vector<Point> points;
     bool divided;
+    Rectangle boundary;
+    vector<Point> points;
     quadTree * northwest;
     quadTree * northeast;
     quadTree * southwest;
     quadTree * southeast;
 public:
-    
-    void insert();
-};
+    quadTree(const Rectangle& boundary, int capacity):boundary(boundary), capacity(capacity), divided(false),
+          northwest(nullptr), northeast(nullptr), southwest(nullptr), southeast(nullptr) {}
+    void subdivide();
+    bool insert(const Point &);
 
+};
