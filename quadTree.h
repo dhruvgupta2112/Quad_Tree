@@ -34,9 +34,10 @@ private:
     quadTree * southeast;
 public:
     quadTree(const Rectangle& boundary, int capacity):boundary(boundary), capacity(capacity), divided(false),
-          northwest(nullptr), northeast(nullptr), southwest(nullptr), southeast(nullptr) {}
+            northwest(nullptr), northeast(nullptr), southwest(nullptr), southeast(nullptr) {}
     void subdivide();
     bool insert(const Point &);
     vector<Point> search(Rectangle &);
+    void display();
     
 };

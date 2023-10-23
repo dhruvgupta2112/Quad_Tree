@@ -2,7 +2,7 @@
 
 bool Rectangle::contains(const Point & point){
     return (point.x >= x - w/2 && point.x <= x + w/2 &&
-            point.y >= y - h/2 && point.y <= h/2);
+            point.y >= y - h/2 && point.y <= y + h/2);
 }
 
 bool Rectangle::intersects(const Rectangle & R2){
@@ -32,31 +32,30 @@ void quadTree::subdivide() {
 }
 
 bool quadTree::insert(const Point & point){
-     if (!boundary.contains(point)) {
-            return false;
-        }
 
-        if (points.size() < capacity) {
-            points.push_back(point);
-            return true;
-        } else {
-            if (!divided) {
-                subdivide();
-            }
-
-            if (northwest->insert(point)) return true;
-            if (northeast->insert(point)) return true;
-            if (southwest->insert(point)) return true;
-            if (southeast->insert(point)) return true;
-        }
-
+    if (this->boundary.contains(point) == 0) {
         return false;
+    }
+    if (points.size() < capacity) {
+        points.push_back(point);
+        return true;
+    } else {
+        if (!divided) {
+            subdivide();
+        }
+
+        if (northwest->insert(point)) return true;
+        if (northeast->insert(point)) return true;
+        if (southwest->insert(point)) return true;
+        if (southeast->insert(point)) return true;
+    }
+
+    return false;
 }
 
 vector<Point> quadTree::search(Rectangle & region){
     vector<Point> found;
-
-    if(!this->boundary.intersects(region)){
+    if(this->boundary.intersects(region) == 0){
         return found;
     }
     for(auto &pt: points){
@@ -78,3 +77,15 @@ vector<Point> quadTree::search(Rectangle & region){
 
     return found;
 }
+
+void quadTree::display(){
+        for(auto it: points){
+            cout<<it.x<<" "<<it.y<<endl;
+        }
+        if(divided) {
+            northeast->display();
+            northwest->display();
+            southeast->display();
+            southwest->display();
+        }
+    }
