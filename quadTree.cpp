@@ -52,3 +52,29 @@ bool quadTree::insert(const Point & point){
 
         return false;
 }
+
+vector<Point> quadTree::search(Rectangle & region){
+    vector<Point> found;
+
+    if(!this->boundary.intersects(region)){
+        return found;
+    }
+    for(auto &pt: points){
+        if(region.contains(pt)){
+            found.push_back(pt);
+        }
+    }
+    if(divided){
+        vector<Point> nw = northwest->search(region);
+        vector<Point> ne = northeast->search(region);
+        vector<Point> sw = southwest->search(region);
+        vector<Point> se = southeast->search(region);
+
+        found.insert(found.end(), nw.begin(), nw.end());
+        found.insert(found.end(), ne.begin(), ne.end());
+        found.insert(found.end(), sw.begin(), sw.end());
+        found.insert(found.end(), se.begin(), se.end());
+    }
+
+    return found;
+}

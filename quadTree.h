@@ -37,5 +37,6 @@ public:
           northwest(nullptr), northeast(nullptr), southwest(nullptr), southeast(nullptr) {}
     void subdivide();
     bool insert(const Point &);
-
+    vector<Point> search(Rectangle &);
+    
 };
