@@ -22,7 +22,7 @@ public:
 
 class quadTree
 {
-private:
+public:
     int capacity;
     bool divided;
     Rectangle boundary;
@@ -39,4 +39,5 @@ public:
     vector<Point> search(Rectangle &);
     void display();
     vector<Point> RangeQuery(Rectangle &boundary);
+    quadTree bulkLoadquadTree(vector<Point> &, Rectangle &, int capacity);
 };

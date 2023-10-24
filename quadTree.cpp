@@ -114,12 +114,13 @@ void quadTree::display()
 vector<Point> quadTree::RangeQuery(Rectangle &region)
 {
     vector<Point> points;
-    if(this->boundary.intersects(region)==0){
+    if (this->boundary.intersects(region) == 0)
+    {
         return points;
     }
-    if(divided)
+    if (divided)
     {
-        vector<Point> allPoints=search(region); 
+        vector<Point> allPoints = search(region);
         points.insert(points.end(), allPoints.begin(), allPoints.end());
     }
     vector<Point> northwestPoints = RangeQuery(region);
@@ -130,4 +131,29 @@ vector<Point> quadTree::RangeQuery(Rectangle &region)
     points.insert(points.end(), southeastPoints.begin(), southeastPoints.end());
     vector<Point> southwestPoints = RangeQuery(region);
     points.insert(points.end(), southwestPoints.begin(), southwestPoints.end());
+}
+
+quadTree *bulkLoadquadTree(vector<Point> &points, Rectangle &region, int capacity)
+{
+    quadTree *QTree = new quadTree(region, capacity);
+    if (points.empty())
+        return QTree;
+    QTree->subdivide();
+    vector<Point> NEpoints, NWpoints, SEpoints, SWpoints;
+    for (auto it : points)
+    {
+        if (QTree->northeast->boundary.contains(it))
+            NEpoints.push_back(it);
+        else if (QTree->northwest->boundary.contains(it))
+            NWpoints.push_back(it);
+        else if (QTree->southeast->boundary.contains(it))
+            SEpoints.push_back(it);
+        else
+            SWpoints.push_back(it);
+    }
+    QTree->northeast = bulkLoadquadTree(NEpoints, QTree->northeast->boundary, capacity);
+    QTree->northwest = bulkLoadquadTree(NWpoints, QTree->northwest->boundary, capacity);
+    QTree->southeast = bulkLoadquadTree(SEpoints, QTree->southeast->boundary, capacity);
+    QTree->southwest = bulkLoadquadTree(SWpoints, QTree->southwest->boundary, capacity);
+    return QTree;
 }
