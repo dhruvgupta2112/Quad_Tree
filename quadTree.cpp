@@ -14,6 +14,12 @@ bool Rectangle::intersects(const Rectangle &R2)
              R2.y + R2.h / 2 < y - h / 2);
 }
 
+double distance(Point a, Point b){
+    double dist = (a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y);
+    dist = sqrt(dist);
+
+    return dist;
+}
 void quadTree::subdivide()
 {
     double x = this->boundary.x;
@@ -66,7 +72,7 @@ bool quadTree::insert(const Point &point)
     return false;
 }
 
-vector<Point> quadTree::search(Rectangle &region)
+vector<Point> quadTree::rangeQuery(Rectangle &region)
 {
     vector<Point> found;
     if (this->boundary.intersects(region) == 0)
@@ -82,10 +88,10 @@ vector<Point> quadTree::search(Rectangle &region)
     }
     if (divided)
     {
-        vector<Point> nw = northwest->search(region);
-        vector<Point> ne = northeast->search(region);
-        vector<Point> sw = southwest->search(region);
-        vector<Point> se = southeast->search(region);
+        vector<Point> nw = northwest->rangeQuery(region);
+        vector<Point> ne = northeast->rangeQuery(region);
+        vector<Point> sw = southwest->rangeQuery(region);
+        vector<Point> se = southeast->rangeQuery(region);
 
         found.insert(found.end(), nw.begin(), nw.end());
         found.insert(found.end(), ne.begin(), ne.end());
@@ -111,49 +117,68 @@ void quadTree::display()
     }
 }
 
-vector<Point> quadTree::RangeQuery(Rectangle &region)
-{
-    vector<Point> points;
-    if (this->boundary.intersects(region) == 0)
-    {
-        return points;
+// quadTree *bulkLoadquadTree(vector<Point> &points, Rectangle &region, int capacity)
+// {
+//     quadTree *QTree = new quadTree(region, capacity);
+//     if (points.empty())
+//         return QTree;
+//     QTree->subdivide();
+//     vector<Point> NEpoints, NWpoints, SEpoints, SWpoints;
+//     for (auto it : points)
+//     {
+//         if (QTree->northeast->boundary.contains(it))
+//             NEpoints.push_back(it);
+//         else if (QTree->northwest->boundary.contains(it))
+//             NWpoints.push_back(it);
+//         else if (QTree->southeast->boundary.contains(it))
+//             SEpoints.push_back(it);
+//         else
+//             SWpoints.push_back(it);
+//     }
+//     QTree->northeast = bulkLoadquadTree(NEpoints, QTree->northeast->boundary, capacity);
+//     QTree->northwest = bulkLoadquadTree(NWpoints, QTree->northwest->boundary, capacity);
+//     QTree->southeast = bulkLoadquadTree(SEpoints, QTree->southeast->boundary, capacity);
+//     QTree->southwest = bulkLoadquadTree(SWpoints, QTree->southwest->boundary, capacity);
+//     return QTree;
+// }
+
+
+void quadTree::knnSearchRecursive(const Point& target, int k, std::vector<Point>& nearestPoints) {
+        if (!boundary.intersects(Rectangle(target.x, target.y, 0, 0))) {
+            return;
+        }
+
+        for (const Point& point : points) {
+            if (nearestPoints.size() < k) {
+                nearestPoints.push_back(point);
+            } else {
+                for (Point& nearest : nearestPoints) {
+                    if (distance(point,target) < distance(nearest, target)) {
+                        nearest = point;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (divided) {
+            northwest->knnSearchRecursive(target, k, nearestPoints);
+            northeast->knnSearchRecursive(target, k, nearestPoints);
+            southwest->knnSearchRecursive(target, k, nearestPoints);
+            southeast->knnSearchRecursive(target, k, nearestPoints);
+        }
     }
-    if (divided)
-    {
-        vector<Point> allPoints = search(region);
-        points.insert(points.end(), allPoints.begin(), allPoints.end());
-    }
-    vector<Point> northwestPoints = RangeQuery(region);
-    points.insert(points.end(), northwestPoints.begin(), northwestPoints.end());
-    vector<Point> northeastPoints = RangeQuery(region);
-    points.insert(points.end(), northeastPoints.begin(), northeastPoints.end());
-    vector<Point> southeastPoints = RangeQuery(region);
-    points.insert(points.end(), southeastPoints.begin(), southeastPoints.end());
-    vector<Point> southwestPoints = RangeQuery(region);
-    points.insert(points.end(), southwestPoints.begin(), southwestPoints.end());
+
+vector<Point> quadTree::knnSearch(const Point& target, int k) {
+    
+    vector<Point> nearestPoints;
+    knnSearchRecursive(target, k, nearestPoints);
+    return nearestPoints;
 }
 
-quadTree *bulkLoadquadTree(vector<Point> &points, Rectangle &region, int capacity)
-{
-    quadTree *QTree = new quadTree(region, capacity);
-    if (points.empty())
-        return QTree;
-    QTree->subdivide();
-    vector<Point> NEpoints, NWpoints, SEpoints, SWpoints;
-    for (auto it : points)
-    {
-        if (QTree->northeast->boundary.contains(it))
-            NEpoints.push_back(it);
-        else if (QTree->northwest->boundary.contains(it))
-            NWpoints.push_back(it);
-        else if (QTree->southeast->boundary.contains(it))
-            SEpoints.push_back(it);
-        else
-            SWpoints.push_back(it);
-    }
-    QTree->northeast = bulkLoadquadTree(NEpoints, QTree->northeast->boundary, capacity);
-    QTree->northwest = bulkLoadquadTree(NWpoints, QTree->northwest->boundary, capacity);
-    QTree->southeast = bulkLoadquadTree(SEpoints, QTree->southeast->boundary, capacity);
-    QTree->southwest = bulkLoadquadTree(SWpoints, QTree->southwest->boundary, capacity);
-    return QTree;
+quadTree::~quadTree() {
+    delete northwest;
+    delete northeast;
+    delete southwest;
+    delete southeast;
 }

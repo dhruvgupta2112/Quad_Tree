@@ -22,6 +22,8 @@ public:
 
 class quadTree
 {
+private:
+    void knnSearchRecursive(const Point& target, int k, std::vector<Point>& nearestPoints);
 public:
     int capacity;
     bool divided;
@@ -36,8 +38,13 @@ public:
     quadTree(const Rectangle &boundary, int capacity) : boundary(boundary), capacity(capacity), divided(false), northwest(nullptr), northeast(nullptr), southwest(nullptr), southeast(nullptr) {}
     void subdivide();
     bool insert(const Point &);
-    vector<Point> search(Rectangle &);
+    vector<Point> rangeQuery(Rectangle &);
     void display();
-    vector<Point> RangeQuery(Rectangle &boundary);
     quadTree bulkLoadquadTree(vector<Point> &, Rectangle &, int capacity);
+    vector<Point> knnSearch(const Point& target, int k);
+    ~quadTree();
+
+    //try
+        
+    //try
 };

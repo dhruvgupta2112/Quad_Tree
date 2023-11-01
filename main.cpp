@@ -16,7 +16,7 @@ int main(){
     }
 
     Rectangle region(125, 75, 30, 30);
-    vector<Point> ans = Tree.search(region);
+    vector<Point> ans = Tree.rangeQuery(region);
     for(auto it: ans){
         cout<<""<<it.x<<" "<<it.y<<endl;
     }
