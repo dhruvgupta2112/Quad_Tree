@@ -48,7 +48,7 @@ public:
     vector<Point> rangeQuery(Rectangle &);
     void display();
     // Method to create a quadTree from Bulk Loading Algorithm.
-    quadTree bulkLoadquadTree(vector<Point> &, Rectangle &, int capacity);
+    void bulkLoadquadTree(vector<Point> &);
     // Method to perform a k-Nearest Neighbor search and return the k nearest points to a target Point.
     vector<Point> knnSearch(const Point &target, int k);
     // Destructor
