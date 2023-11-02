@@ -124,30 +124,38 @@ void quadTree::display()
     }
 }
 
-// quadTree *bulkLoadquadTree(vector<Point> &points, Rectangle &region, int capacity)
-// {
-//     quadTree *QTree = new quadTree(region, capacity);
-//     if (points.empty())
-//         return QTree;
-//     QTree->subdivide();
-//     vector<Point> NEpoints, NWpoints, SEpoints, SWpoints;
-//     for (auto it : points)
-//     {
-//         if (QTree->northeast->boundary.contains(it))
-//             NEpoints.push_back(it);
-//         else if (QTree->northwest->boundary.contains(it))
-//             NWpoints.push_back(it);
-//         else if (QTree->southeast->boundary.contains(it))
-//             SEpoints.push_back(it);
-//         else
-//             SWpoints.push_back(it);
-//     }
-//     QTree->northeast = bulkLoadquadTree(NEpoints, QTree->northeast->boundary, capacity);
-//     QTree->northwest = bulkLoadquadTree(NWpoints, QTree->northwest->boundary, capacity);
-//     QTree->southeast = bulkLoadquadTree(SEpoints, QTree->southeast->boundary, capacity);
-//     QTree->southwest = bulkLoadquadTree(SWpoints, QTree->southwest->boundary, capacity);
-//     return QTree;
-// }
+quadTree *bulkLoadquadTree(vector<Point> &points, Rectangle &region, int capacity)
+{
+    quadTree *QTree = new quadTree(region, capacity);
+    if (points.empty())
+        return QTree;
+    if (points.size() <= capacity)
+    {
+        for (auto it : points)
+        {
+            QTree->insert(it);
+        }
+        return QTree;
+    }
+    QTree->subdivide();
+    vector<Point> NEpoints, NWpoints, SEpoints, SWpoints;
+    for (auto it : points)
+    {
+        if (QTree->northeast->boundary.contains(it))
+            NEpoints.push_back(it);
+        else if (QTree->northwest->boundary.contains(it))
+            NWpoints.push_back(it);
+        else if (QTree->southeast->boundary.contains(it))
+            SEpoints.push_back(it);
+        else
+            SWpoints.push_back(it);
+    }
+    QTree->northeast = bulkLoadquadTree(NEpoints, QTree->northeast->boundary, capacity);
+    QTree->northwest = bulkLoadquadTree(NWpoints, QTree->northwest->boundary, capacity);
+    QTree->southeast = bulkLoadquadTree(SEpoints, QTree->southeast->boundary, capacity);
+    QTree->southwest = bulkLoadquadTree(SWpoints, QTree->southwest->boundary, capacity);
+    return QTree;
+}
 
 // Recursively perform k-Nearest Neighbor (kNN) search.
 void quadTree::knnSearchRecursive(const Point &target, int k, vector<Point> &nearestPoints)
@@ -186,7 +194,7 @@ void quadTree::knnSearchRecursive(const Point &target, int k, vector<Point> &nea
     }
 }
 
- // Perform a k-Nearest Neighbor (kNN) search from the root node.
+// Perform a k-Nearest Neighbor (kNN) search from the root node.
 vector<Point> quadTree::knnSearch(const Point &target, int k)
 {
 

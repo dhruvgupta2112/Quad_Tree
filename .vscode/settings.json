@@ -58,6 +58,8 @@
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
     "*.ejs": "html",
-    "algorithm": "cpp"
+    "algorithm": "cpp",
+    "ostream": "cpp",
+    "iostream": "cpp"
   }
 }
