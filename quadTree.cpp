@@ -124,124 +124,102 @@ void quadTree::display()
     }
 }
 
-// quadTree *bulkLoadquadTree(vector<Point> &points, Rectangle &region, int capacity)
-// {
-//     quadTree *QTree = new quadTree(region, capacity);
-//     // If there are no points
-//     if (points.empty())
-//         return QTree;
-//     // If the number of points is less than or equal to the capacity, insert them into the current node.
-//     if (points.size() <= capacity)
-//     {
-//         for (auto it : points)
-//         {
-//             QTree->insert(it);
-//         }
-//         return QTree;
-//     }
-//     // If the number of points exceeds the capacity, subdivide the quadTree node.
-//     QTree->subdivide();
-//     // Partition the points into the sub-quadrants based on their locations.
-//     vector<Point> NEpoints, NWpoints, SEpoints, SWpoints;
-//     for (auto it : points)
-//     {
-//         if (QTree->northeast->boundary.contains(it))
-//             NEpoints.push_back(it);
-//         else if (QTree->northwest->boundary.contains(it))
-//             NWpoints.push_back(it);
-//         else if (QTree->southeast->boundary.contains(it))
-//             SEpoints.push_back(it);
-//         else
-//             SWpoints.push_back(it);
-//     }
-//     // Recursively build the quadTree for each sub-quadrant.
-//     QTree->northeast = bulkLoadquadTree(NEpoints, QTree->northeast->boundary, capacity);
-//     QTree->northwest = bulkLoadquadTree(NWpoints, QTree->northwest->boundary, capacity);
-//     QTree->southeast = bulkLoadquadTree(SEpoints, QTree->southeast->boundary, capacity);
-//     QTree->southwest = bulkLoadquadTree(SWpoints, QTree->southwest->boundary, capacity);
-//     return QTree;
-// }
-
-void quadTree::bulkLoadquadTree(vector<Point> &points)
+void quadTree::bulkLoadquadTree(vector<Point> &pts)
 {
     // If there are no points or the number of points is less than or equal to the capacity, insert them into the current node.
-    if (points.empty() || points.size() <= capacity)
+    vector<Point> NW, NE, SE, SW;
+    int i=0;
+    for (auto it : pts)
     {
-        for (auto it : points)
-        {
-            insert(it);
+        if(i++ < capacity) this->points.push_back(it);
+        if(i==capacity+1)subdivide();
+        if(i>capacity){
+            if(northeast->boundary.contains(it)) NE.push_back(it);
+            if(northwest->boundary.contains(it)) NW.push_back(it);
+            if(southeast->boundary.contains(it)) SE.push_back(it);
+            if(southwest->boundary.contains(it)) SW.push_back(it);
         }
-        return;
+
     }
-
-    // // If the number of points exceeds the capacity, subdivide the quadTree node.
-    // subdivide();
-
-    // // Partition the points into the sub-quadrants based on their locations.
-    // vector<Point> NEpoints, NWpoints, SEpoints, SWpoints;
-    // for (auto it : points)
-    // {
-    //     if (northeast->boundary.contains(it))
-    //         NEpoints.push_back(it);
-    //     else if (northwest->boundary.contains(it))
-    //         NWpoints.push_back(it);
-    //     else if (southeast->boundary.contains(it))
-    //         SEpoints.push_back(it);
-    //     else
-    //         SWpoints.push_back(it);
-    // }
-
-    // // Recursively build the quadTree for each sub-quadrant.
-    // northeast->bulkLoadquadTree(NEpoints);
-    // northwest->bulkLoadquadTree(NWpoints);
-    // southeast->bulkLoadquadTree(SEpoints);
-    // southwest->bulkLoadquadTree(SWpoints);
+    if(i>=capacity){
+        northeast->bulkLoadquadTree(NE);
+        northwest->bulkLoadquadTree(NW);
+        southeast->bulkLoadquadTree(SE);
+        southwest->bulkLoadquadTree(SW);
+    }
 }
 
 
 // Recursively perform k-Nearest Neighbor (kNN) search.
-void quadTree::knnSearchRecursive(const Point &target, int k, vector<Point> &nearestPoints)
-{
-    if (!boundary.intersects(Rectangle(target.x, target.y, 0, 0)))
-    {
-        return;
+void quadTree::knnSearchRecursive(const Point &query, int k, vector<Point> &nearestPoints)
+{   
+    for(auto point : points){
+        double dist = distance(point, query);
+        // add point to neighbours if it is closer to query or the we do not get k points
+        if(nearestPoints.size() < k || dist < distance(nearestPoints.back(), query)){
+            nearestPoints.push_back(point);
+
+            std::sort(nearestPoints.begin(), nearestPoints.end(), [query](Point p1, Point p2){
+                return distance(p1, query) < distance(p2, query);
+            } );
+
+            if(nearestPoints.size() > k)
+                nearestPoints.pop_back(); // keep k closet neighbours
+        }
     }
 
-    for (const Point &point : points)
-    {
-        if (nearestPoints.size() < k)
-        {
-            nearestPoints.push_back(point);
+    if(divided){
+        //northeast
+        double x1 = northeast->boundary.x - northeast->boundary.w/2;
+        double x2 = northeast->boundary.x + northeast->boundary.w/2;
+        double y1 = northeast->boundary.y - northeast->boundary.h/2;
+        double y2 = northeast->boundary.y + northeast->boundary.h/2;
+        double dist = min(abs(query.x - x1), abs(query.x - x2));
+        dist = min(dist, min(abs(query.y - y1), abs(query.y - y2)));
+        if(nearestPoints.size() < k || distance(nearestPoints.back(), query) > dist){
+            northeast->knnSearchRecursive(query, k, nearestPoints);
         }
-        else
-        {
-            for (Point &nearest : nearestPoints)
-            {
-                // Update nearest if a closer point is found
-                if (distance(point, target) < distance(nearest, target))
-                {
-                    nearest = point;
-                    break;
-                }
-            }
+        
+        //northwest
+        x1 = northwest->boundary.x - northwest->boundary.w/2;
+        x2 = northwest->boundary.x + northwest->boundary.w/2;
+        y1 = northwest->boundary.y - northwest->boundary.h/2;
+        y2 = northwest->boundary.y + northwest->boundary.h/2;
+        dist = min(abs(query.x - x1), abs(query.x - x2));
+        dist = min(dist, min(abs(query.y - y1), abs(query.y - y2)));
+        if(nearestPoints.size() < k || distance(nearestPoints.back(), query) > dist){
+            northwest->knnSearchRecursive(query, k, nearestPoints);
         }
-    }
-    // Recursively search in sub-quadrants.
-    if (divided)
-    {
-        northwest->knnSearchRecursive(target, k, nearestPoints);
-        northeast->knnSearchRecursive(target, k, nearestPoints);
-        southwest->knnSearchRecursive(target, k, nearestPoints);
-        southeast->knnSearchRecursive(target, k, nearestPoints);
+
+        //southeast
+        x1 = southeast->boundary.x - southeast->boundary.w/2;
+        x2 = southeast->boundary.x + southeast->boundary.w/2;
+        y1 = southeast->boundary.y - southeast->boundary.h/2;
+        y2 = southeast->boundary.y + southeast->boundary.h/2;
+        dist = min(abs(query.x - x1), abs(query.x - x2));
+        dist = min(dist, min(abs(query.y - y1), abs(query.y - y2)));
+        if(nearestPoints.size() < k || distance(nearestPoints.back(), query) > dist){
+            southeast->knnSearchRecursive(query, k, nearestPoints);
+        }
+
+        //southwest
+        x1 = southwest->boundary.x - southwest->boundary.w/2;
+        x2 = southwest->boundary.x + southwest->boundary.w/2;
+        y1 = southwest->boundary.y - southwest->boundary.h/2;
+        y2 = southwest->boundary.y + southwest->boundary.h/2;
+        dist = min(abs(query.x - x1), abs(query.x - x2));
+        dist = min(dist, min(abs(query.y - y1), abs(query.y - y2)));
+        if(nearestPoints.size() < k || distance(nearestPoints.back(), query) > dist){
+            southwest->knnSearchRecursive(query, k, nearestPoints);
+        }
     }
 }
 
 // Perform a k-Nearest Neighbor (kNN) search from the root node.
-vector<Point> quadTree::knnSearch(const Point &target, int k)
+vector<Point> quadTree::knnSearch(const Point &query, int k)
 {
-
     vector<Point> nearestPoints;
-    knnSearchRecursive(target, k, nearestPoints);
+    knnSearchRecursive(query, k, nearestPoints);
     return nearestPoints;
 }
 
@@ -252,3 +230,18 @@ quadTree::~quadTree()
     delete southwest;
     delete southeast;
 }
+
+//method to know whether the point is present
+bool quadTree::search(Point p){
+    if(!boundary.contains(p))return false; 
+    for(int i=0;i<capacity;i++){
+        if(this->points[i]==p) return true;
+    }
+    if(divided){
+        if(this->northeast->search(p) | this->northwest->search(p) | this->southeast->search(p) | this->southwest->search(p)){
+            return true;
+        }
+    }
+    return false;
+}
+

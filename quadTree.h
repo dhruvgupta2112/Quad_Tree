@@ -8,6 +8,10 @@ class Point
 public:
     double x, y;
     Point(double x = 0, double y = 0) : x(x), y(y) {}
+    bool operator==(const Point & p){
+        if(this->x==p.x && this->y==p.y) return true;
+        return false;
+    }
 };
 
 // Define a class to represent rectangles.
@@ -50,11 +54,17 @@ public:
     // Method to create a quadTree from Bulk Loading Algorithm.
     void bulkLoadquadTree(vector<Point> &);
     // Method to perform a k-Nearest Neighbor search and return the k nearest points to a target Point.
-    vector<Point> knnSearch(const Point &target, int k);
+    vector<Point> knnSearch(const Point &query, int k);
     // Destructor
     ~quadTree();
 
-    // try
+    //method to know whether the point is present
+    bool search(Point p);
 
-    // try
+    // method to get height
+    int getHeight(){
+        if(capacity==0) return 0;
+        if(!divided) return 1;
+        return 1 + max(max(max(northeast->getHeight(), northwest->getHeight()),southeast->getHeight()), southwest->getHeight());
+    }
 };
