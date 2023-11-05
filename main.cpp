@@ -4,45 +4,102 @@
 #include <time.h>
 using namespace std;
 
+void help(){
+    cout<<left<<setw(32)<<"Functions"<<"command"<<endl;
+    cout<<left<<setw(32)<<"insertion"<<"i"<<endl;
+    cout<<left<<setw(32)<<"multiple insertion(bulkload)"<<"mi"<<endl;
+    cout<<left<<setw(32)<<"enter 10 random points: "<<"rand"<<endl;
+    cout<<left<<setw(32)<<"range Query"<<"rquery"<<endl;
+    cout<<left<<setw(32)<<"k nearest element"<<"knn"<<endl;
+    cout<<left<<setw(32)<<"help"<<"help"<<endl;
+    cout<<left<<setw(32)<<"exit"<<"exit"<<endl;
+}
 int main()
 {
-    // srand(time(0));
-    // Just rough work to check the working of search and insertion
-    Rectangle Area(100, 100, 100, 100);
-    quadTree Tree(Area, 4);
-    // cout << " Points inserted into tree:" << endl;
-    vector<Point> input;
-    for (int i = 0; i < 30; i++)
-    {
-        Point x = Point(100 + rand() % 100 - 50, 100 + rand() % 100 - 50);
-        //cout << " " << x.x << " " << x.y << endl;
-        //Tree.insert(x);
-        input.push_back(x);
-    }
-    Point y = Point(127, 62);
-    Tree.insert(y);
-    // cout << "Input vector is:" << endl;
-    // for (auto it : input)
-    //     cout << "" << it.x << " " << it.y << endl;
-    // Boundary cases working fine
-    // if we want to use bulk loading on existing quad tree then recursion bulking loading should not be used and if we want to use bulk loading on new quad tree we can use bulk loading using recursion.
-    // Bulk loading working fine
-    Tree.bulkLoadquadTree(input);
+    Rectangle region(100, 100, 200, 200); // x-cordinate, y-cordinate, width, height
+    quadTree qt(region, 4);
+    string choice;
+    cout<<"\nQuad Tree is created of size 200 * 200\n\n";
+    help();
+    cout<<endl;
+    while(1){
+        cout<<"enter your choice: ";
+        cin>>choice;
+        if(choice == "i"){
+            double x, y;
+            cout<<"enter x: ";cin>>x;
+            cout<<"enter y: ";cin>>y;
+            qt.insert(Point(x, y));
+            cout<<"Point ("<<x<<", "<<y<<") inserted successfully\n\n";
+        }
+        else if(choice == "mi"){
+            vector<Point> bulk;
+            int n;
+            double x, y;
+            cout<<"enter number of points to enter: ";cin>>n;
+            while(n--){
+                cout<<"enter x: ";cin>>x;
+                cout<<"enter y: ";cin>>y;
+                bulk.push_back(Point(x, y));
+            }
+            qt.bulkLoadquadTree(bulk);
+            cout<<"Bulkloading done successfully\n\n";
+        }
+        else if(choice == "rquery"){
+            double x, y, w, h;
+            cout<<"define the region for query: \n";
+            cout<<"enter x: ";cin>>x;
+            cout<<"enter y: ";cin>>y;
+            cout<<"enter w: ";cin>>w;
+            cout<<"enter h: ";cin>>h;
 
-    cout<<"knn search\n";
-    vector<Point> ans = Tree.knnSearch(y, 6);
+            Rectangle rquery = Rectangle(x, y, w, h);
+            vector<Point> ans = qt.rangeQuery(rquery);
+            cout<<"Points lie in the region are: \n";
+            if(ans.empty()) cout<<"No points found\n";
+            else
+            for(auto point: ans){
+                cout<<"x: "<<point.x<<"\t"<<"y: "<<point.y<<endl;
+            }
+        }
+        else if(choice == "rand"){
+            srand(time(0));
+            vector<Point> input;
+            for (int i = 0; i < 10; i++){
+                Point x = Point(rand()%200, rand()%200);
+                input.push_back(x);
+            }
+            qt.bulkLoadquadTree(input);
+            cout<<"10 random points are inserted\n\n";
+        }
+        else if(choice == "knn"){
+            Point p;int n;
+            cout<<"enter x: ";cin>>p.x;
+            cout<<"enter y: ";cin>>p.y;
+            cout<<"enter number of points: ";cin>>n;
 
-    for(auto it: ans){
-        cout<<it.x<<" "<<it.y<<endl;
+            vector<Point> ans = qt.knnSearch(p, n);
+            if(ans.empty()) cout<<"there are no points\n\n";
+            else{
+                cout<<n<<" points nearest to point ("<< p.x<<", "<<p.y<<") are: \n";
+                for(auto point: ans){
+                    cout<<"x: "<<point.x<<"\ty: "<<point.y<<endl;
+                }
+                cout<<endl;
+            }
+
+        }
+        else if(choice == "help"){
+            help();
+            cout<<endl;
+        }
+        else if(choice == "exit") break;
+        else {
+            cout<<"\'"<<choice<<"\'"<<" command not found\n";
+            help();
+            cout<<endl;
+        }
     }
-    // cout << "Points into range query:" << endl;
-    // Rectangle region(125, 75, 40, 40);
-    // vector<Point> ans = Tree.rangeQuery(region);
-    // // Range Query working fine
-    // for (auto it : ans)
-    // {
-    //     cout << "" << it.x << " " << it.y << endl;
-    // }
-    // cout<<"display\n";
-    // Tree.display();
+
+    return 0;
 }
