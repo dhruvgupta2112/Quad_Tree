@@ -62,9 +62,5 @@ public:
     bool search(Point p);
 
     // method to get height
-    int getHeight(){
-        if(capacity==0) return 0;
-        if(!divided) return 1;
-        return 1 + max(max(max(northeast->getHeight(), northwest->getHeight()),southeast->getHeight()), southwest->getHeight());
-    }
+    int getHeight();
 };

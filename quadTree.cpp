@@ -179,7 +179,7 @@ void quadTree::knnSearchRecursive(const Point &query, int k, vector<Point> &near
         if(nearestPoints.size() < k || distance(nearestPoints.back(), query) > dist){
             northeast->knnSearchRecursive(query, k, nearestPoints);
         }
-        
+
         //northwest
         x1 = northwest->boundary.x - northwest->boundary.w/2;
         x2 = northwest->boundary.x + northwest->boundary.w/2;
@@ -245,3 +245,8 @@ bool quadTree::search(Point p){
     return false;
 }
 
+int quadTree::getHeight(){
+        if(capacity==0) return 0;
+        if(!divided) return 1;
+        return 1 + max(max(max(northeast->getHeight(), northwest->getHeight()),southeast->getHeight()), southwest->getHeight());
+    }
