@@ -33,10 +33,10 @@ void quadTree::subdivide()
     double h = this->boundary.h / 2;
 
     // Create four new sub-Rectangles for the sub-quadrants.
-    Rectangle nw(x - w / 2, y - h / 2, w, h);
-    Rectangle ne(x + w / 2, y - h / 2, w, h);
-    Rectangle sw(x - w / 2, y + h / 2, w, h);
-    Rectangle se(x + w / 2, y + h / 2, w, h);
+    Rectangle nw(x - w / 2, y + h / 2, w, h);
+    Rectangle ne(x + w / 2, y + h / 2, w, h);
+    Rectangle sw(x - w / 2, y - h / 2, w, h);
+    Rectangle se(x + w / 2, y - h / 2, w, h);
 
     // Create new quadTree nodes for the sub-quadrants.
     northwest = new quadTree(nw, capacity);
@@ -128,20 +128,20 @@ void quadTree::bulkLoadquadTree(vector<Point> &pts)
 {
     // If there are no points or the number of points is less than or equal to the capacity, insert them into the current node.
     vector<Point> NW, NE, SE, SW;
-    int i=0;
+    int i=points.size();
     for (auto it : pts)
     {
         if(i++ < capacity) this->points.push_back(it);
-        if(i==capacity+1)subdivide();
+        if(i==capacity+1){if(!divided)subdivide();}
         if(i>capacity){
             if(northeast->boundary.contains(it)) NE.push_back(it);
-            if(northwest->boundary.contains(it)) NW.push_back(it);
-            if(southeast->boundary.contains(it)) SE.push_back(it);
-            if(southwest->boundary.contains(it)) SW.push_back(it);
+            else if(northwest->boundary.contains(it)) NW.push_back(it);
+            else if(southeast->boundary.contains(it)) SE.push_back(it);
+            else if(southwest->boundary.contains(it)) SW.push_back(it);
         }
 
     }
-    if(i>=capacity){
+    if(i>capacity){
         northeast->bulkLoadquadTree(NE);
         northwest->bulkLoadquadTree(NW);
         southeast->bulkLoadquadTree(SE);
