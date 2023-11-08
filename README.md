@@ -33,7 +33,7 @@ Our project basically explores working of QuadTree and how Quadtrees can be supe
 5.After running the programe, Follow the on-screen prompts to perform various operations with the quad tree
 6.You can use following command for doing various oprations in QuadTree :
     
-        i      for Inserting a single point.
+        	i      for Inserting a single point.
 		mi     for Performing bulk insertion.
 		rand   for Inserting 10 random points.
  		rquery for Performing a range query.
