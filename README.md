@@ -39,4 +39,4 @@ Our project basically explores working of QuadTree and how Quadtrees can be supe
  		rquery for Performing a range query.
    		knn    for Performing a k-Nearest Neighbor search.
 		help   for Displaying the list of available commands.	
-		exiet  for Quit the program
+		exit  for Quit the program
