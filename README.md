@@ -26,7 +26,7 @@ Our project basically explores working of QuadTree and how Quadtrees can be supe
 
 # How to run
 
-1.open the terminal or command prompt.
+1.open the terminal or command prompt.\n
 2.Navigate to the directory containing your source code files.
 3.Compile the main.cpp file in terminal using command "g++ main.c"
 4.After successful compilation, run the program by using the command "./a.out".
