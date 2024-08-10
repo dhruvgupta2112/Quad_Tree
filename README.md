@@ -12,7 +12,7 @@
 ### project name : QuadTree With Optimizations
 
 ## Summary
-   In our project, we learned a special type of data structure called a Quadtree.Think of it as a tree where each branch has exactly four smaller branches.  We use Quadtrees to divide a two-dimensional space into four parts. This helps us organize and find things efficiently in space-related tasks.This helps us organize and find things efficiently in space-related tasks.The structure pf QuadTree enables efficient spatial indexing and is particularly valuable in applications requiring spatial representation.in our project we also learned some applications of QuadTree like image compression,spatial indexing.
+   In our project, we learned a special type of data structure called a Quadtree.Think of it as a tree where each branch has exactly four smaller branches.  We use Quadtrees to divide a two-dimensional space into four parts. This helps us organize and find things efficiently in space-related tasks.This helps us organize and find things efficiently in space-related tasks.The structure of QuadTree enables efficient spatial indexing and is particularly valuable in applications requiring spatial representation.in our project we also learned some applications of QuadTree like image compression,spatial indexing.
 
 We focused on three main things in our project:
 
